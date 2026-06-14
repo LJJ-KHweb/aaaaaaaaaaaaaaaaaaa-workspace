@@ -72,7 +72,7 @@ const BoardForm = () => {
       </Field>
       <Field>
         <Label>카테고리</Label>
-        <Select onChange={(e) => console.log(e.target.value)}>
+        <Select onChange={(e) => setCategoty(e.target.value)}>
           <option value="자동차">자동차</option>
           <option value="게임">게임</option>
           <option value="음식">음식</option>
