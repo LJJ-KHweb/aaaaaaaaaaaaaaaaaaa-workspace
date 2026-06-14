@@ -16,59 +16,66 @@ import {
   Actions,
   Textarea,
 } from "./styles/Board.styles";
-import axios from "axios";
-import {
-  UNSAFE_shouldHydrateRouteLoader,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
 import { Field, Input, Label, Message } from "../styles/AuthForm.styles";
 import { Select } from "../styles/AuthForm.styles";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
-const BoardForm = () => {
-  const navi = useNavigate();
+const BoardEditForm = () => {
+  const { boardNo } = useParams();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [file, setFile] = useState(null);
-  const [question, setQuestion] = useState(0);
+  const [question, setQuestion] = useState(1);
   const [password, setPassword] = useState("");
+  const [board, setBoard] = useState([]);
   const [hint, setHint] = useState("");
-  const [category, setCategoty] = useState("자동차");
+  const [category, setCategory] = useState("자동차");
+  const navi = useNavigate();
+
+  useEffect(() => {
+    axios.get(`http://localhost/api/boards/${boardNo}`).then((result) => {
+      setBoard(result.data);
+      console.log("들어옴");
+    });
+  }, [boardNo]);
+  useEffect(() => {
+    if (!board) return;
+
+    setTitle(board.boardTitle ?? "");
+    setContent(board.boardContent ?? "");
+    setHint(board.boardHint ?? "");
+  }, [board]);
 
   const onSubmit = () => {
-    //console.log(question);
-    //console.log(password);
-    //console.log(hint);
     const fd = new FormData();
     fd.append("boardTitle", title);
     fd.append("boardContent", content);
     if (file) fd.append("file", file);
     fd.append("boardQuestion", question);
     fd.append("boardPwd", password);
-    if (hint) fd.append("boardHint", hint);
     fd.append("boardCategory", category);
+    //for (let key of fd.keys()) {
+    //  console.log(key);
+    //}
+    //for (let value of fd.values()) {
+    //  console.log(value);
+    //}
     axios
-      .post("http://localhost/api/boards", fd)
-      .then((result) => {
-        console.log(result);
-        navi("/boards");
-      })
-      .catch((e) => console.log(e.reponse));
+      .patch(`http://localhost/api/boards/${boardNo}`, fd)
+      .then((result) => navi("/boards"))
+      .catch((e) => {
+        alert("이상해 암호가");
+      });
   };
-
   return (
     <Page>
       <TopBar>
-        <PageTitle>글쓰기</PageTitle>
+        <PageTitle>수정하기</PageTitle>
       </TopBar>
-
       <Field>
         <Label>제목</Label>
-        <Input
-          placeholder="제목을 입력하세요"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <Input value={title} onChange={(e) => setTitle(e.target.value)} />
       </Field>
       <Field>
         <Label>카테고리</Label>
@@ -85,7 +92,6 @@ const BoardForm = () => {
         <Label>내용</Label>
 
         <Textarea
-          placeholder="내용을 입력하세요"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
@@ -97,13 +103,17 @@ const BoardForm = () => {
             파일선택
             <input
               type="file"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              onChange={(e) => {
+                setFile(e.target.files?.[0] ?? null);
+                board.fileUrl = null;
+              }}
             />
           </FileLabel>
+          {board.fileUrl && (
+            <FileLabel>선택된 파일 : {board.fileUrl}</FileLabel>
+          )}
+          {file && <FileLabel>선택된 파일 : {file.name}</FileLabel>}
         </div>
-      </Field>
-      <Field>
-        <Label>질문</Label>
       </Field>
       <Field>
         <Select onChange={(e) => setQuestion(e.target.value)}>
@@ -120,17 +130,14 @@ const BoardForm = () => {
           type="text"
           placeholder="질문에 대한 답을 적으세요"
         />
-        <Input
-          onChange={(e) => setHint(e.target.value)}
-          type="text"
-          placeholder="질문에 대한 힌트를 적으세요"
-        />
+
+        <ItemMeta>힌트 : {hint}</ItemMeta>
       </Field>
 
       <Field>
-        <Button onClick={onSubmit}>등록하기</Button>
+        <Button onClick={onSubmit}>수정하기</Button>
       </Field>
     </Page>
   );
 };
-export default BoardForm;
+export default BoardEditForm;

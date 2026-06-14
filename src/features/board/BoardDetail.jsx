@@ -64,6 +64,10 @@ const BoardDetail = () => {
           )}
         </FileBox>
       )}
+      <Button onClick={() => navi(`/boards/${boardNo}/edit`)}>수정하기</Button>
+      <DangerButton onClick={() => navi(`/boards/${boardNo}/delete`)}>
+        삭제하기
+      </DangerButton>
     </Page>
   );
 };

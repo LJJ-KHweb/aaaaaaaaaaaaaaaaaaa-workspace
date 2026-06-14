@@ -21,16 +21,19 @@ const BoardList = () => {
   const navi = useNavigate();
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(3);
+  const [category, setCategory] = useState("자동차");
 
   useEffect(() => {
     axios
-      .get(`http://localhost/api/boards?page=${page + 1}&size=${size}`)
+      .get(
+        `http://localhost/api/boards?page=${page + 1}&size=${size}&category=${category}`,
+      )
       .then((result) => {
-        console.log(result.data);
+        //console.log(result.data);
         setBoards(result.data);
-        console.log(boards);
+        //console.log(boards);
       });
-  }, [page]);
+  }, [page, category]);
 
   return (
     <Page>
@@ -39,11 +42,14 @@ const BoardList = () => {
         <Button onClick={() => navi("/boards/write")}>글쓰기</Button>
       </TopBar>
       <TopBar>
-        <Button>#자동차</Button>
-        <Button>#ㅁㅁㅁ</Button>
-        <Button>#ㄴㄴㄴ</Button>
-        <Button>#ㄷㄷㄷ</Button>
-        <Button>#ㄹㄹㄹ</Button>
+        <ItemTitle>카테고리</ItemTitle>
+        <Button onClick={(e) => setCategory(e.target.textContent)}>
+          자동차
+        </Button>
+        <Button onClick={(e) => setCategory(e.target.textContent)}>게임</Button>
+        <Button onClick={(e) => setCategory(e.target.textContent)}>음식</Button>
+        <Button onClick={(e) => setCategory(e.target.textContent)}>여행</Button>
+        <Button onClick={(e) => setCategory(e.target.textContent)}>재미</Button>
       </TopBar>
       <List>
         {boards.map((b) => {
