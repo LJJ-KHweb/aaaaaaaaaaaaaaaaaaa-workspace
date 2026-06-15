@@ -11,6 +11,7 @@ import BoardForm from "./features/board/BoardForm";
 import Footer from "./components/layout/footer/Footer";
 import BoardEditForm from "./features/board/BoardEditForm";
 import BoardDeleteForm from "./features/board/BoardDeleteForm";
+import AdminLogin from "./features/admin/AdminLogin";
 function App() {
   const [count, setCount] = useState(0);
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/boards/write" element={<BoardForm />} />
         <Route path="/boards/:boardNo/edit" element={<BoardEditForm />} />
         <Route path="/boards/:boardNo/delete" element={<BoardDeleteForm />} />
+        <Route path="/admin" element={<AdminLogin />} />
       </Routes>
       <Footer />
     </>

@@ -22,20 +22,51 @@ import {
 } from "./styles/Board.styles";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-const BoardDetail = () => {
+const BoardDetail = async () => {
   const navi = useNavigate();
   const [board, setBoard] = useState(null);
   const [loading, isLoading] = useState(true);
   const { boardNo } = useParams();
-
+  const { isLogin } = useAuth();
+  const [ deleteBoard, setDeleteBoard] = useState("");
   useEffect(() => {
-    //console.log("여기 들어옴");
-    axios.get(`http://localhost/api/boards/${boardNo}`).then((result) => {
-      console.log(result.data);
-      setBoard(result.data);
-    });
+    {
+      try{
+        if(isLogin){
+          const res1 = await axios.get(
+            `http://localhost/api/admin/${boardNo}`
+          );
+          setBoard(res1.data);
+
+          const res2 = await axios.get(
+            `http://localhost/api/admin/deletedboards/${boardNo}`,
+          );
+          console.log(res2.data);
+          setDeleteboard(res2.data);
+        }
+      }
+
+
+      console.log(isLogin);
+      isLogin
+        ? axios
+            .get(`http://localhost/api/admin/${boardNo}`)
+            .then((result) => setBoard(result.data))
+        : axios.get(`http://localhost/api/boards/${boardNo}`).then((result) => {
+            console.log(result.data);
+            setBoard(result.data);
+          });
+    }
   }, []);
+
+  const onSubmit = () => {
+    axios.delete(`http://localhost/api/admin/${boardNo}`).then((result) => {
+      //console.log(result);
+      navi("/boards");
+    });
+  };
 
   if (!board) {
     return (
@@ -65,9 +96,17 @@ const BoardDetail = () => {
         </FileBox>
       )}
       <Button onClick={() => navi(`/boards/${boardNo}/edit`)}>수정하기</Button>
-      <DangerButton onClick={() => navi(`/boards/${boardNo}/delete`)}>
-        삭제하기
-      </DangerButton>
+      {isLogin ? (
+        <>
+          <Button onClick={onSubmit}>복구하기</Button>
+        </>
+      ) : (
+        <>
+          <DangerButton onClick={() => navi(`/boards/${boardNo}/delete`)}>
+            삭제하기
+          </DangerButton>
+        </>
+      )}
     </Page>
   );
 };

@@ -30,7 +30,7 @@ const BoardForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [file, setFile] = useState(null);
-  const [question, setQuestion] = useState(0);
+  const [question, setQuestion] = useState(1);
   const [password, setPassword] = useState("");
   const [hint, setHint] = useState("");
   const [category, setCategoty] = useState("자동차");
